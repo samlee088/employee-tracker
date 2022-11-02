@@ -1,7 +1,6 @@
 const inquirer= require('inquirer');
 const cTable = require('console.table');
-const { Server } = require('http');
-
+const runData = require('./server');
 
 
 
@@ -18,15 +17,20 @@ let initialPrompt = [
 ];
 
 
+// async function viewDepartmentsAll() {
+//     allDepartmentsResults = await runData.queryAllDepartments();
+//     console.table(viewDepartmentsAll);
+//     return allDepartmentsResults;
 
+// }
 
 async function init() {
     let initialPromptResponse = await inquirer.prompt(initialPrompt)
     switch(initialPromptResponse.initialAction) {
         case ('view all departments'):
         console.log('test')
-        let viewDepartmentsAll = await Server.queryAllDepartments
-        console.table(viewDepartmentAll);
+        // viewDepartmentsAll();
+        
         return;
 
         case('view all roles'):

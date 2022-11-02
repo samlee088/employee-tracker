@@ -1,4 +1,4 @@
-const { query } = require('express');
+
 const express = require('express');
 const mysql = require('mysql2');
 
@@ -30,6 +30,7 @@ function queryAllDepartments() {
 
     db.query('Select * FROM department ORDER BY id', function(err, results) {
         err ? console.log("Error loading all departments") : console.log("success loading all departments");
+        console.log(results);
         return results;
         }
     )
@@ -57,8 +58,10 @@ function queryAllDepartments() {
 
 
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`Server running on port ${PORT}`);
+// });
 
-module.exports('server');
+module.exports = {
+    queryAllDepartments,
+}
