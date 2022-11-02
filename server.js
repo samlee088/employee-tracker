@@ -3,14 +3,11 @@ const express = require('express');
 const mysql = require('mysql2');
 
 
-
-
 const PORT = process.env.PORT || 3001;
 const app = express();
 
 app.use(express.urlencoded({extended:false}));
 app.use(express.json());
-
 
 
 const db = mysql.createConnection(
@@ -41,6 +38,18 @@ function queryAllDepartments() {
 
 // WHEN I choose to view all roles
 // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
+
+function queryAllRoles() {
+    db.query('Select r.id, r.title, FROM role r LEFT JOIN department d ON r.department_id = d.id', function(err, results) {
+        err ? console.error("Error loading all roles") : console.log("Success loading all roles");
+        console.log(results);
+        return results;
+
+    })
+}
+
+
+
 // WHEN I choose to view all employees
 // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
 // WHEN I choose to add a department
