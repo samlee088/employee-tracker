@@ -1,11 +1,11 @@
 const mysql = require('mysql2');
-
+const cTable = require('console.table');
 
 const db = mysql.createConnection(
     {
         host: 'localhost',
         user:'root',
-        password: ' ',
+        password: 'seahawks8372',
         database:'employee_db'
     },
 
@@ -14,17 +14,16 @@ console.log('Connected to the employee_db database.')
 
 // WHEN I choose to view all departments
 // THEN I am presented with a formatted table showing department names and department ids
-function queryAllDepartments() {
+ function queryAllDepartments() {
 
-    db.query('Select * FROM department ORDER BY id', function(err, results) {
+     db.query('Select * FROM department ORDER BY id', function(err, results) {
         err ? console.log("Error loading all departments") : console.log("success loading all departments");
-        console.log(results);
-        return results;
-        }
-    )
-
-
-}
+       
+        console.table(results)
+        return ;
+    });
+    return;
+};
 
 
 // WHEN I choose to view all roles

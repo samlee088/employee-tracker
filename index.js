@@ -17,53 +17,54 @@ let initialPrompt = [
 ];
 
 
-// async function viewDepartmentsAll() {
-//     allDepartmentsResults = await runData.queryAllDepartments();
-//     console.table(viewDepartmentsAll);
-//     return allDepartmentsResults;
-
-// }
+let initialPromptResponse 
 
 async function init() {
-    let initialPromptResponse = await inquirer.prompt(initialPrompt)
+    initialPromptResponse = await inquirer.prompt(initialPrompt)
+
+    determineAction(initialPromptResponse);
+}
+
+function determineAction(initialPromptResponse) {
     switch(initialPromptResponse.initialAction) {
+        
         case ('view all departments'):
         console.log('test')
-        queryRun.queryAllDepartments;
-
-        
-        return;
+        queryRun.queryAllDepartments();
+        console.log('tetset');
+        break;
 
         case('view all roles'):
         console.log('test2')
-        return;
+        
+        break;
 
         case('view all employees'):
         console.log('test3')
-        return;
+        break;
 
         case('add a department'):
         console.log('test4')
-        return;
+        break;
 
         case('add a role'):
         console.log('test5')
-        return;
+        break;
 
         case('add an employee'):
         console.log('test6')
-        return;
+        break;
 
         case('update an employee'):
         console.log('test7')
-        return;
+        break;
 
         default:
         console.info("Please select a valid option")
-        return;
+        break;
     }
-
-
+    return;
+  
 
 }
 
