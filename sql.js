@@ -20,9 +20,9 @@ console.log('Connected to the employee_db database.')
         err ? console.log("Error loading all departments") : console.log("success loading all departments");
        
         console.table(results)
-        return ;
+         ;
     });
-    return;
+    ;
 };
 
 

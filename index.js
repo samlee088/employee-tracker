@@ -31,6 +31,7 @@ function determineAction(initialPromptResponse) {
         case ('view all departments'):
         console.log('test')
         queryRun.queryAllDepartments();
+        init();
         console.log('tetset');
         break;
 
