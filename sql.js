@@ -1,20 +1,11 @@
-
-const express = require('express');
 const mysql = require('mysql2');
-
-
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-app.use(express.urlencoded({extended:false}));
-app.use(express.json());
 
 
 const db = mysql.createConnection(
     {
         host: 'localhost',
         user:'root',
-        password: ' ',
+        password: 'seahawks8372 ',
         database:'employee_db'
     },
 
@@ -52,8 +43,31 @@ function queryAllRoles() {
 
 // WHEN I choose to view all employees
 // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+
+function queryAllEmployees() {
+    db.query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary, d.name FROM employee e LEFT JOIN role r ON r.id = e.role_id LEFT JOIN department d ON d.id = role.department_id ORDER BY e.id', function(err, results) {
+        err ? console.error("Error loading all employees") : console.log("Success loading all employees");
+    return results;
+    })
+
+}1
+
+
+
+
+
 // WHEN I choose to add a department
 // THEN I am prompted to enter the name of the department and that department is added to the database
+
+function addDepartment(data) {
+    db.query(`INSERT INTO department (id, name) Values (${data.id},${data.name})` , function(err, results) {
+    err ? console.error('Error with adding new department') : console.log('Success with adding new department');
+
+    console.log(results);
+    } );
+
+
+}
 // WHEN I choose to add a role
 // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
 // WHEN I choose to add an employee
@@ -73,4 +87,6 @@ function queryAllRoles() {
 
 module.exports = {
     queryAllDepartments,
+    queryAllRoles,
+    queryAllEmployees
 }

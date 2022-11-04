@@ -1,6 +1,6 @@
 const inquirer= require('inquirer');
 const cTable = require('console.table');
-const runData = require('./server');
+const queryRun = require('./sql');
 
 
 
@@ -29,7 +29,8 @@ async function init() {
     switch(initialPromptResponse.initialAction) {
         case ('view all departments'):
         console.log('test')
-        // viewDepartmentsAll();
+        queryRun.queryAllDepartments;
+
         
         return;
 
