@@ -175,7 +175,9 @@ async function determineAction(response) {
         break;
 
         case('add a role'):
-        let departmentTotalArray = await queryRun.departmentsList();
+
+        departmentTotalArray = await grabRoleData();
+        // let departmentTotalArray = await queryRun.departmentsList();
         
         // let dataResults = await queryRun.departmentsList();
 
@@ -186,7 +188,7 @@ async function determineAction(response) {
         // departmentTotalArray = data);
         // createArray(data);
         console.info(departmentTotalArray);
-        inquirer
+        await inquirer
         .prompt(addRolePrompt)
         .then((response) =>{
             const {roleName, roleSalary, roleDepartment} = response
@@ -238,6 +240,14 @@ async function determineAction(response) {
 }
 
 
+async function grabRoleData() {
+
+    const results = await queryRun.departmentsList();
+
+    return results;
+
+
+}
 function addDepartmentTrigger() {
 
     inquirer
