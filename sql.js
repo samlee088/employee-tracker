@@ -16,13 +16,15 @@ console.log('Connected to the employee_db database.')
 // THEN I am presented with a formatted table showing department names and department ids
  function queryAllDepartments() {
 
-     db.query('Select * FROM department ORDER BY id', function(err, results) {
+    db.query('Select * FROM department ORDER BY id', function(err, results) {
         err ? console.log("Error loading all departments") : console.log("success loading all departments");
        
-        console.table(results)
-         ;
+        // return results
+        return console.table(results)
+        //  ;
     });
     ;
+    // return data;
 };
 
 
@@ -30,11 +32,9 @@ console.log('Connected to the employee_db database.')
 // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
 
 function queryAllRoles() {
-    db.query('Select r.id, r.title, FROM role r LEFT JOIN department d ON r.department_id = d.id', function(err, results) {
+    db.query('Select * FROM role ORDER BY id', function(err, results) {
         err ? console.error("Error loading all roles") : console.log("Success loading all roles");
-        console.log(results);
-        return results;
-
+        return console.table(results);
     })
 }
 
@@ -44,14 +44,20 @@ function queryAllRoles() {
 // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
 
 function queryAllEmployees() {
-    db.query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary, d.name FROM employee e LEFT JOIN role r ON r.id = e.role_id LEFT JOIN department d ON d.id = role.department_id ORDER BY e.id', function(err, results) {
+    db.query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary FROM employee AS e JOIN role AS r ON r.id = e.role_id', function(err, results) {
         err ? console.error("Error loading all employees") : console.log("Success loading all employees");
-    return results;
+    return console.table(results);
     })
 
-}1
+}
 
+// function queryAllEmployees() {
+//     db.query('SELECT r.title, r.salary, d.name FROM role r JOIN department AS d ON d.id = role.department_id', function(err, results) {
+//         err ? console.error("Error loading all employees") : console.log("Success loading all employees");
+//     return console.table(results);
+//     })
 
+// }
 
 
 

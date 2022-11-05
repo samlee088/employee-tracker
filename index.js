@@ -19,29 +19,41 @@ let initialPrompt = [
 
 let initialPromptResponse 
 
-async function init() {
-    initialPromptResponse = await inquirer.prompt(initialPrompt)
+function init() {
+    // initialPromptResponse = await inquirer.prompt(initialPrompt)
 
-    determineAction(initialPromptResponse);
+    inquirer
+    .prompt(initialPrompt)
+    .then((response) => {
+        determineAction(response);
+    })
+
+
+
+    
+    // determineAction(initialPromptResponse);
 }
 
-function determineAction(initialPromptResponse) {
-    switch(initialPromptResponse.initialAction) {
+function determineAction(response) {
+    switch(response.initialAction) {
         
         case ('view all departments'):
         console.log('test')
+        // let data = queryRun.queryAllDepartments();
+        // console.table(data);
         queryRun.queryAllDepartments();
-        init();
         console.log('tetset');
         break;
 
         case('view all roles'):
         console.log('test2')
-        
+        queryRun.queryAllRoles();
+
         break;
 
         case('view all employees'):
         console.log('test3')
+        queryRun.queryAllEmployees();
         break;
 
         case('add a department'):
@@ -64,8 +76,8 @@ function determineAction(initialPromptResponse) {
         console.info("Please select a valid option")
         break;
     }
-    return;
-  
+    
+    init();
 
 }
 
