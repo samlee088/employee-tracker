@@ -125,7 +125,15 @@ function changeRole(employee, newRole) {
 }
 
 
-
+function departmentsList() {
+    db.query('SELECT DISTINCT(name) FROM department', function(err, result) {
+        err ? console.error("Error with department values") : console.log("Success with department values")
+        // console.log(result);
+        resolve(result);
+        let returnData = result;
+        return returnData;
+    });
+}
 
 
 // app.listen(PORT, () => {
@@ -139,5 +147,6 @@ module.exports = {
     addDepartment,
     addRole,
     addEmployee,
-    changeRole
+    changeRole,
+    departmentsList
 }

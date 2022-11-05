@@ -27,7 +27,19 @@ let addDepartmentPrompt = [
 
 ]
 
+// let departmentTotalArray = queryRun.departmentsList() || [];
+let departmentTotalArray 
 
+// let newArray = departmentTotalArray.map(department => `${department.id} ${department.name}`)
+// function createArray(data) {
+
+// departmentTotalArray = [];
+
+//     if (data !== undefined) {
+//     for(let i=0; i<data.length; i++) {
+//         departmentTotalArray.push(data[i].name)
+//     }}
+// } 
 
 
 
@@ -46,13 +58,16 @@ let addRolePrompt = [
 
     },
     {
-        type:'input',
-        message:'What is the department number?',
+        type:'list',
+        message:'Which department would they be a part of?',
         name:'roleDepartment',
+        choices: departmentTotalArray,
 
     }
 
 ]
+
+
 
 
 let addEmployeePrompt = [
@@ -121,7 +136,7 @@ function init() {
     // determineAction(initialPromptResponse);
 }
 
-function determineAction(response) {
+async function determineAction(response) {
     switch(response.initialAction) {
         
         case ('view all departments'):
@@ -129,18 +144,19 @@ function determineAction(response) {
         // let data = queryRun.queryAllDepartments();
         // console.table(data);
         queryRun.queryAllDepartments();
-        console.log('tetset');
+        
+       
         init();
         break;
 
         case('view all roles'):
-        console.log('test2')
+       
         queryRun.queryAllRoles();
         init();
         break;
 
         case('view all employees'):
-        console.log('test3')
+      
         queryRun.queryAllEmployees();
         init();
         break;
@@ -159,11 +175,21 @@ function determineAction(response) {
         break;
 
         case('add a role'):
+        let departmentTotalArray = await queryRun.departmentsList();
+        
+        // let dataResults = await queryRun.departmentsList();
+
+        // dataResults.then((data) =>
+        // departmentTotalArray = data);
+        // const promise = queryRun.departmentsList();
+        // promise.then((data) =>
+        // departmentTotalArray = data);
+        // createArray(data);
+        console.info(departmentTotalArray);
         inquirer
         .prompt(addRolePrompt)
         .then((response) =>{
             const {roleName, roleSalary, roleDepartment} = response
-
             queryRun.addRole(roleName, roleSalary, roleDepartment)
 
             init();
