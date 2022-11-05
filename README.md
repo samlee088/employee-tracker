@@ -25,7 +25,7 @@
 
   Usage is to download, install inquirer, and run through a terminal application of the users choice.
 
-  ![screenshot of usage of the application]()
+  ![screenshot of usage of the application](/assets/employee-tracker-screenshot.png)
 
 
   ## Credits
