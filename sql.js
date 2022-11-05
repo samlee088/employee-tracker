@@ -5,7 +5,7 @@ const db = mysql.createConnection(
     {
         host: 'localhost',
         user:'root',
-        password: 'seahawks8372',
+        password: 'password',
         database:'employee_db'
     },
 
@@ -14,16 +14,21 @@ console.log('Connected to the employee_db database.')
 
 // WHEN I choose to view all departments
 // THEN I am presented with a formatted table showing department names and department ids
- function queryAllDepartments() {
+ async function queryAllDepartments() {
 
-    db.query('Select * FROM department ORDER BY id', function(err, results) {
-        err ? console.log("Error loading all departments") : console.log("success loading all departments");
-       
-        // return results
-        return console.table(results)
-        //  ;
-    });
-    ;
+    const returnData = await db.promise().query('Select name,id as value FROM department ORDER BY id')
+   
+    return returnData[0];
+
+//    , function(err, results) {
+//         err ? console.log("Error loading all departments") : console.log("success loading all departments");
+//         console.log(results);
+//         const queryResults = results;
+//         // return results
+//        return queryResults;
+//         //  ;
+//     });
+//     ;
     // return data;
 };
 
@@ -31,11 +36,16 @@ console.log('Connected to the employee_db database.')
 // WHEN I choose to view all roles
 // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
 
-function queryAllRoles() {
-    db.query('Select * FROM role ORDER BY id', function(err, results) {
-        err ? console.error("Error loading all roles") : console.log("Success loading all roles");
-        return console.table(results);
-    })
+async function queryAllRoles() {
+    const returnAllRoles = await db.promise().query('Select * FROM role ORDER BY id')
+    
+    return returnAllRoles[0];
+    
+    
+    // , function(err, results) {
+    //     err ? console.error("Error loading all roles") : console.log("Success loading all roles");
+    //     return console.table(results);
+    // })
 }
 
 
@@ -43,10 +53,11 @@ function queryAllRoles() {
 // WHEN I choose to view all employees
 // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
 
-function queryAllEmployees() {
+function queryAllEmployees(init) {
     db.query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary, d.name FROM employee AS e JOIN role AS r ON r.id = e.role_id JOIN department d ON d.id = r.department_id', function(err, results) {
         err ? console.error("Error loading all employees") : console.log("Success loading all employees");
-    return console.table(results);
+    console.table(results);
+    init();
     })
 
 }
@@ -125,7 +136,7 @@ function changeRole(employee, newRole) {
 }
 
 
-async function departmentsList() {
+function departmentsList() {
     db.query('SELECT DISTINCT(name) FROM department', function(err, result) {
         err ? console.error("Error with department values") : console.log("Success with department values")
         // console.log(result);

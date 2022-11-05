@@ -61,7 +61,7 @@ let addRolePrompt = [
         type:'list',
         message:'Which department would they be a part of?',
         name:'roleDepartment',
-        choices: departmentTotalArray,
+        choices: async () => {return await queryRun.queryAllDepartments()},
 
     }
 
@@ -140,9 +140,9 @@ async function determineAction(response) {
     switch(response.initialAction) {
         
         case ('view all departments'):
-        console.log('test')
+        
         // let data = queryRun.queryAllDepartments();
-        // console.table(data);
+        console.table(data);
         queryRun.queryAllDepartments();
         
        
@@ -151,19 +151,22 @@ async function determineAction(response) {
 
         case('view all roles'):
        
-        queryRun.queryAllRoles();
+        
+       const queryAllRolesResults = await queryRun.queryAllRoles();
+        console.table(queryAllRolesResults);
         init();
         break;
 
         case('view all employees'):
       
-        queryRun.queryAllEmployees();
-        init();
+        queryRun.queryAllEmployees(init);
+        // init();
         break;
 
         case('add a department'):
         // addDepartmentTrigger();
 
+        
         inquirer
         .prompt(addDepartmentPrompt)
         .then((response) => {
@@ -176,19 +179,51 @@ async function determineAction(response) {
 
         case('add a role'):
 
-        departmentTotalArray = await grabRoleData();
-        // let departmentTotalArray = await queryRun.departmentsList();
-        
-        // let dataResults = await queryRun.departmentsList();
+        // departmentTotalArray = await grabRoleData();
+        // let departmentTotalArray = queryRun.departmentsList();
+        // console.log(departmentTotalArray);
+        // departmentTotalArray = await queryRun.queryAllDepartments();
+        // console.log(departmentTotalArray);
 
+        // let dataResults = await queryRun.departmentsList();
+        // await grabRoleData().catch(e => departmentTotalArray = e);
+        // await queryRun.queryAllDepartments().catch(e=>departmentTotalArray = e);
         // dataResults.then((data) =>
         // departmentTotalArray = data);
         // const promise = queryRun.departmentsList();
         // promise.then((data) =>
         // departmentTotalArray = data);
         // createArray(data);
-        console.info(departmentTotalArray);
-        await inquirer
+
+        // departmentTotalArray = await queryRun.queryAllDepartments();
+
+        // let addRolePrompt = [
+        //     {
+        //         type: 'input',
+        //         message: 'What is the name fo the new role?',
+        //         name:'roleName',
+        
+        //     },
+        //     {
+        //         type:'input',
+        //         message:'What is the salary?',
+        //         name:'roleSalary',
+        
+        //     },
+        //     {
+        //         type:'list',
+        //         message:'Which department would they be a part of?',
+        //         name:'roleDepartment',
+        //         choices: departmentTotalArray,
+        
+        //     }
+        
+        // ]
+        
+
+
+        // console.info(departmentTotalArray);
+        inquirer
         .prompt(addRolePrompt)
         .then((response) =>{
             const {roleName, roleSalary, roleDepartment} = response
@@ -242,7 +277,7 @@ async function determineAction(response) {
 
 async function grabRoleData() {
 
-    const results = await queryRun.departmentsList();
+    const results = queryRun.departmentsList();
 
     return results;
 
