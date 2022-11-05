@@ -73,6 +73,7 @@ async function queryAllEmployees(init) {
 
 async function addDepartment(data,init) {
     try{
+        console.info(data);
         await db.promise().query(`INSERT INTO department (name) Values (?)`, data )
         const addDepartmentResults = await db.promise().query('SELECT * FROM department')
 
@@ -159,6 +160,42 @@ async function changeRole(employee, newRole, init) {
 }
 
 
+async function changeManager(employee, newManager, init) {
+    
+    try{
+            
+            await db.promise().query('UPDATE employee SET manager_id = (?) WHERE id =(?)', [newManager,employee])
+            const updateManagerResults = await db.promise().query('SELECT * FROM employee ORDER BY id')
+
+            console.table(updateManagerResults[0])
+            init();
+        }
+    
+
+    catch(err) {
+        console.error("Error with updating manager");
+        init();
+    }
+}
+
+async function viewSubordinates(data,init) {
+    try{
+
+        console.log(data);
+        const viewSubordinatesResults = await db.promise().query(`SELECT id,first_name, last_name FROM employee WHERE manager_id =(?)`, data)
+
+        console.table(viewSubordinatesResults[0]);
+        init();
+    }
+
+    catch(err) {
+        console.error("Error with viewing subordinates");
+        init();
+    }
+
+}
+
+
 async function departmentsList() {
     try {
         const departmentsListResults = await db.promise().query('Select name,id as value FROM department ORDER BY id')
@@ -197,6 +234,20 @@ async function managersList() {
     }
 }
 
+async function managersUpdateList() {
+    try{
+        const managersListResults = await db.promise().query('SELECT first_name as name, id as value FROM employee ORDER BY id')
+     
+        return managersListResults[0];
+
+    }
+
+    catch(err) {
+        console.error("Error with grabbing manager list");
+    }
+}
+
+
 async function employeesList() {
     try{
         const employeesListArray = await db.promise().query('SELECT first_name as name, id as value FROM employee ORDER BY id')
@@ -221,6 +272,9 @@ module.exports = {
     departmentsList,
     managersList,
     rolesList,
-    employeesList
+    employeesList,
+    changeManager,
+    managersUpdateList,
+    viewSubordinates
 
 }

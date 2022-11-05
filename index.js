@@ -13,7 +13,7 @@ let initialPrompt = [
         type:'list',
         message:'Please choose from the following options',
         name:'initialAction',
-        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee']
+        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee','update employees manager','view employees by manager']
     },
 ];
 
@@ -104,10 +104,33 @@ let roleUpdatePrompt = [
 
 ]
 
+let updateEmployeeManager = [
+    {
+        type:'list',
+        message:'Who is the employee to update?',
+        name:'employee',
+        choices: async() => { return await queryRun.employeesList()},
+    },
+    {
+        type:'list',
+        message:'Who is the employees new manager?',
+        name:'newManager',
+        choices: async() => { return await queryRun.managersList()},
 
+    },
 
+]
 
+let selectManager = [
+    {
+        type:'list',
+        message:'Which manager would you like to see which employees report to?',
+        name:'Manager',
+        choices: async() =>{return await queryRun.managersList()},
 
+    },
+
+]
 
 let initialPromptResponse 
 
@@ -190,6 +213,28 @@ async function determineAction(response) {
             
 
         })
+        break;
+
+        case('update employees manager'):
+        inquirer
+        .prompt(updateEmployeeManager)
+        .then((response) => {
+        const {employee, newManager} = response;
+        queryRun.changeManager(employee, newManager, init);
+
+        });
+
+        break;
+
+        case('view employees by manager'):
+        inquirer
+        .prompt(selectManager)
+        .then((response) => {
+            console.log(response);
+            
+            queryRun.viewSubordinates(response,init);
+        })
+
         break;
 
         default:
