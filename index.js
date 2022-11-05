@@ -1,6 +1,7 @@
 const inquirer= require('inquirer');
 const cTable = require('console.table');
 const queryRun = require('./sql');
+const e = require('express');
 
 
 
@@ -27,27 +28,12 @@ let addDepartmentPrompt = [
 
 ]
 
-// let departmentTotalArray = queryRun.departmentsList() || [];
-let departmentTotalArray 
-
-// let newArray = departmentTotalArray.map(department => `${department.id} ${department.name}`)
-// function createArray(data) {
-
-// departmentTotalArray = [];
-
-//     if (data !== undefined) {
-//     for(let i=0; i<data.length; i++) {
-//         departmentTotalArray.push(data[i].name)
-//     }}
-// } 
-
-
 
 
 let addRolePrompt = [
     {
         type: 'input',
-        message: 'What is the name fo the new role?',
+        message: 'What is the name of the new role?',
         name:'roleName',
 
     },
@@ -61,7 +47,7 @@ let addRolePrompt = [
         type:'list',
         message:'Which department would they be a part of?',
         name:'roleDepartment',
-        choices: async () => {return await queryRun.queryAllDepartments()},
+        choices: async () => {return await queryRun.departmentsList()},
 
     }
 
@@ -84,15 +70,17 @@ let addEmployeePrompt = [
 
     },
     {
-        type:'input',
+        type:'list',
         message:'What is the role?',
         name:'employee_role',
+        choices: async() => {return await queryRun.rolesList()},
 
     },
     {
-        type:'input',
+        type:'list',
         message:'Who is the employees manager?',
         name:'employeeManager',
+        choices: async() => {return await queryRun.managersList()},
 
     },
 ]
@@ -100,15 +88,17 @@ let addEmployeePrompt = [
 
 let roleUpdatePrompt = [
     {
-        type:'input',
+        type:'list',
         message:'Who is the employee to update?',
         name:'employee',
-
+        choices: async() => { return await queryRun.employeesList()},
+        
     },
     {
-        type:'input',
+        type:'list',
         message:'What is the employees new role?',
         name:'newRole',
+        choices: async() => { return await queryRun.rolesList()},
 
     },
 
@@ -140,112 +130,49 @@ async function determineAction(response) {
     switch(response.initialAction) {
         
         case ('view all departments'):
-        
-        // let data = queryRun.queryAllDepartments();
-        console.table(data);
-        queryRun.queryAllDepartments();
-        
-       
-        init();
-        break;
+            await queryRun.queryAllDepartments(init);
+            break;
 
         case('view all roles'):
-       
-        
-       const queryAllRolesResults = await queryRun.queryAllRoles();
-        console.table(queryAllRolesResults);
-        init();
-        break;
+            await queryRun.queryAllRoles(init);
+            break;
 
         case('view all employees'):
-      
-        queryRun.queryAllEmployees(init);
-        // init();
-        break;
+            await queryRun.queryAllEmployees(init);
+            break;
 
         case('add a department'):
-        // addDepartmentTrigger();
-
-        
-        inquirer
-        .prompt(addDepartmentPrompt)
-        .then((response) => {
-            const {departmentName} = response
-            queryRun.addDepartment(departmentName);
-            init();
-        });
-        
-        break;
+            inquirer
+            .prompt(addDepartmentPrompt)
+            .then((response) => {
+                const {departmentName} = response
+                queryRun.addDepartment(departmentName,init);
+                init();
+            });
+            
+            break;
 
         case('add a role'):
+            inquirer
+            .prompt(addRolePrompt)
+            .then((response) =>{
+                const {roleName, roleSalary, roleDepartment} = response
+                queryRun.addRole(roleName, roleSalary, roleDepartment,init)
 
-        // departmentTotalArray = await grabRoleData();
-        // let departmentTotalArray = queryRun.departmentsList();
-        // console.log(departmentTotalArray);
-        // departmentTotalArray = await queryRun.queryAllDepartments();
-        // console.log(departmentTotalArray);
+              
 
-        // let dataResults = await queryRun.departmentsList();
-        // await grabRoleData().catch(e => departmentTotalArray = e);
-        // await queryRun.queryAllDepartments().catch(e=>departmentTotalArray = e);
-        // dataResults.then((data) =>
-        // departmentTotalArray = data);
-        // const promise = queryRun.departmentsList();
-        // promise.then((data) =>
-        // departmentTotalArray = data);
-        // createArray(data);
-
-        // departmentTotalArray = await queryRun.queryAllDepartments();
-
-        // let addRolePrompt = [
-        //     {
-        //         type: 'input',
-        //         message: 'What is the name fo the new role?',
-        //         name:'roleName',
-        
-        //     },
-        //     {
-        //         type:'input',
-        //         message:'What is the salary?',
-        //         name:'roleSalary',
-        
-        //     },
-        //     {
-        //         type:'list',
-        //         message:'Which department would they be a part of?',
-        //         name:'roleDepartment',
-        //         choices: departmentTotalArray,
-        
-        //     }
-        
-        // ]
-        
-
-
-        // console.info(departmentTotalArray);
-        inquirer
-        .prompt(addRolePrompt)
-        .then((response) =>{
-            const {roleName, roleSalary, roleDepartment} = response
-            queryRun.addRole(roleName, roleSalary, roleDepartment)
-
-            init();
-
-        })
-
-
-        
-        break;
+            })
+            break;
 
         case('add an employee'):
-        inquirer 
-        .prompt(addEmployeePrompt)
-        .then((response) => {
-            const {first_name, last_name, employee_role, employeeManager} = response;
+            inquirer 
+            .prompt(addEmployeePrompt)
+            .then((response) => {
+                const {first_name, last_name, employee_role, employeeManager} = response;
+                console.log(first_name, last_name, employee_role, employeeManager);
+                queryRun.addEmployee(first_name, last_name, employee_role, employeeManager,init);
 
-            queryRun.addEmployee(first_name, last_name, employee_role, employeeManager);
-
-            init();
+                
 
 
         })
@@ -258,9 +185,9 @@ async function determineAction(response) {
         .prompt(roleUpdatePrompt)
         .then((response) => {
             const {employee,newRole} = response;
-            queryRun.changeRole(employee,newRole)
+            queryRun.changeRole(employee,newRole,init)
 
-            init();
+            
 
         })
         break;
@@ -269,36 +196,8 @@ async function determineAction(response) {
         console.info("Please select a valid option")
         break;
     }
-    
-    // init();
 
 }
 
-
-async function grabRoleData() {
-
-    const results = queryRun.departmentsList();
-
-    return results;
-
-
-}
-function addDepartmentTrigger() {
-
-    inquirer
-    .prompt(addDepartmentPrompt)
-    .then((response) => {
-        queryRun.addDepartment(response);
-
-    });
-
-
-
-    // let addDepartmentResponse =  inquirer(addDepartmentPrompt)
-
-    // await queryRun.addDepartment(addDepartmentResponse);
-
-    console.log("success");
-}
 
 init();
