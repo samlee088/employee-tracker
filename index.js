@@ -17,6 +17,33 @@ let initialPrompt = [
 ];
 
 
+let addRolePrompt = [
+    {
+        type: 'input',
+        message: 'What is the name fo the new role?',
+        name:'roleName',
+
+    },
+    {
+        type:'input',
+        message:'What is the salary?',
+        name:'roleSalary',
+
+    },
+    {
+        type:'input',
+        message:'What is the department number?',
+        name:'roleDepartment',
+        
+    }
+
+
+]
+
+
+
+
+
 let initialPromptResponse 
 
 function init() {

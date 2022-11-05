@@ -5,7 +5,7 @@ VALUES  ("Mathematics"),
 
 
 INSERT INTO role (id, title, salary, department_id)
-VALUES  (1, "Manager", 1.00, 1),
+VALUES  (1, "Manager", 1.00,1),
         (2, "Hourly",.50,2);
 
 

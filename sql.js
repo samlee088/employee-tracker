@@ -44,20 +44,14 @@ function queryAllRoles() {
 // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
 
 function queryAllEmployees() {
-    db.query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary FROM employee AS e JOIN role AS r ON r.id = e.role_id', function(err, results) {
+    db.query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary, d.name FROM employee AS e JOIN role AS r ON r.id = e.role_id JOIN department d ON d.id = r.department_id', function(err, results) {
         err ? console.error("Error loading all employees") : console.log("Success loading all employees");
     return console.table(results);
     })
 
 }
 
-// function queryAllEmployees() {
-//     db.query('SELECT r.title, r.salary, d.name FROM role r JOIN department AS d ON d.id = role.department_id', function(err, results) {
-//         err ? console.error("Error loading all employees") : console.log("Success loading all employees");
-//     return console.table(results);
-//     })
 
-// }
 
 
 
@@ -75,6 +69,15 @@ function addDepartment(data) {
 }
 // WHEN I choose to add a role
 // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
+
+function addRole() {
+
+
+
+}
+
+
+
 // WHEN I choose to add an employee
 // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 // WHEN I choose to update an employee role
