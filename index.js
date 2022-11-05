@@ -170,7 +170,7 @@ async function determineAction(response) {
             .then((response) => {
                 const {departmentName} = response
                 queryRun.addDepartment(departmentName,init);
-                init();
+               
             });
             
             break;
