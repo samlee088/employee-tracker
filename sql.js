@@ -54,15 +54,17 @@ function queryAllEmployees() {
 
 
 
-
 // WHEN I choose to add a department
 // THEN I am prompted to enter the name of the department and that department is added to the database
 
 function addDepartment(data) {
-    db.query(`INSERT INTO department (id, name) Values (${data.id},${data.name})` , function(err, results) {
+    db.query(`INSERT INTO department (name) Values (?)`, data , function(err, results) {
     err ? console.error('Error with adding new department') : console.log('Success with adding new department');
 
-    console.log(results);
+    db.query('SELECT * FROM department',function(err,results) {
+        err ? console.error("Error with displaying employee table") : console.log ("Success with displaying employee data");
+        return console.table(results);
+    })
     } );
 
 
@@ -70,20 +72,57 @@ function addDepartment(data) {
 // WHEN I choose to add a role
 // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
 
-function addRole() {
+function addRole(roleName, roleSalary, roleDepartment) {
+
+    db.query(`INSERT INTO role (title,salary, department_id) VALUES (?,?,?)`, [roleName,roleSalary,roleDepartment], function(err, results) {
+        err ? console.error("Error with adding in role") : console.log("Success with adding in role")
+    });
 
 
+    db.query('SELECT * FROM role ORDER BY id', function(err, results) {
+        err ? console.error('Error with role table display') : console.log("Success with role table display");
 
+        return console.table(results);
+    })
+   
 }
 
 
 
 // WHEN I choose to add an employee
 // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
+
+function addEmployee(first_name, last_name, employee_role, employeeManager) {
+
+    db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [first_name, last_name, employee_role, employeeManager], function(err, results) {
+        err ? console.error('Error with adding in new employee') : console.log('Success with adding in new employee');
+    })
+
+    db.query('SELECT * FROM employee ORDER BY id', function(err, results) {
+        err ? console.error("Error with employee table print") : console.log("Success with employee table print");
+        return console.table(results);
+    })
+
+}
+
+
+
+
+
 // WHEN I choose to update an employee role
 // THEN I am prompted to select an employee to update and their new role and this information is updated in the database
 
+function changeRole(employee, newRole) {
+    db.query('UPDATE employee SET role_id = (?) WHERE id =(?)', [newRole,employee], function(err, results) {
+        err ? console.error("Error with updating employee information") : console.log("Success with updating employee information");
+    })
 
+    db.query('SELECT * FROM employee ORDER BY id', function(err, results) {
+        err ? console.error("Error with employee table display") : console.log("Success with employee table display");
+        
+        return console.table(results);
+    })
+}
 
 
 
@@ -96,5 +135,9 @@ function addRole() {
 module.exports = {
     queryAllDepartments,
     queryAllRoles,
-    queryAllEmployees
+    queryAllEmployees,
+    addDepartment,
+    addRole,
+    addEmployee,
+    changeRole
 }

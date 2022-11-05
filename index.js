@@ -17,6 +17,21 @@ let initialPrompt = [
 ];
 
 
+let addDepartmentPrompt = [
+    {
+        type:'prompt',
+        message:'What is the department name?',
+        name:'departmentName',
+
+    },
+
+]
+
+
+
+
+
+
 let addRolePrompt = [
     {
         type: 'input',
@@ -34,11 +49,56 @@ let addRolePrompt = [
         type:'input',
         message:'What is the department number?',
         name:'roleDepartment',
-        
+
     }
 
+]
+
+
+let addEmployeePrompt = [
+    {
+        type:'input',
+        message:'What is the employees first name?',
+        name:'first_name',
+
+    },
+    {
+        type:'input',
+        message:'What is the employees last name?',
+        name:'last_name',
+
+    },
+    {
+        type:'input',
+        message:'What is the role?',
+        name:'employee_role',
+
+    },
+    {
+        type:'input',
+        message:'Who is the employees manager?',
+        name:'employeeManager',
+
+    },
+]
+
+
+let roleUpdatePrompt = [
+    {
+        type:'input',
+        message:'Who is the employee to update?',
+        name:'employee',
+
+    },
+    {
+        type:'input',
+        message:'What is the employees new role?',
+        name:'newRole',
+
+    },
 
 ]
+
 
 
 
@@ -70,33 +130,76 @@ function determineAction(response) {
         // console.table(data);
         queryRun.queryAllDepartments();
         console.log('tetset');
+        init();
         break;
 
         case('view all roles'):
         console.log('test2')
         queryRun.queryAllRoles();
-
+        init();
         break;
 
         case('view all employees'):
         console.log('test3')
         queryRun.queryAllEmployees();
+        init();
         break;
 
         case('add a department'):
-        console.log('test4')
+        // addDepartmentTrigger();
+
+        inquirer
+        .prompt(addDepartmentPrompt)
+        .then((response) => {
+            const {departmentName} = response
+            queryRun.addDepartment(departmentName);
+            init();
+        });
+        
         break;
 
         case('add a role'):
-        console.log('test5')
+        inquirer
+        .prompt(addRolePrompt)
+        .then((response) =>{
+            const {roleName, roleSalary, roleDepartment} = response
+
+            queryRun.addRole(roleName, roleSalary, roleDepartment)
+
+            init();
+
+        })
+
+
+        
         break;
 
         case('add an employee'):
-        console.log('test6')
+        inquirer 
+        .prompt(addEmployeePrompt)
+        .then((response) => {
+            const {first_name, last_name, employee_role, employeeManager} = response;
+
+            queryRun.addEmployee(first_name, last_name, employee_role, employeeManager);
+
+            init();
+
+
+        })
+
+      
         break;
 
         case('update an employee'):
-        console.log('test7')
+        inquirer
+        .prompt(roleUpdatePrompt)
+        .then((response) => {
+            const {employee,newRole} = response;
+            queryRun.changeRole(employee,newRole)
+
+            init();
+
+        })
         break;
 
         default:
@@ -104,8 +207,27 @@ function determineAction(response) {
         break;
     }
     
-    init();
+    // init();
 
+}
+
+
+function addDepartmentTrigger() {
+
+    inquirer
+    .prompt(addDepartmentPrompt)
+    .then((response) => {
+        queryRun.addDepartment(response);
+
+    });
+
+
+
+    // let addDepartmentResponse =  inquirer(addDepartmentPrompt)
+
+    // await queryRun.addDepartment(addDepartmentResponse);
+
+    console.log("success");
 }
 
 init();
