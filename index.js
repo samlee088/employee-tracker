@@ -2,12 +2,7 @@ const inquirer= require('inquirer');
 const queryRun = require('./sql');
 
 
-
-
-
-
-
-
+/* This starts the section of the inquirer prompts, starting with the base initial set. This is set up so that a user can add in additional choices from the start, and can append new queries to existing functions or create new ones */
 let initialPrompt = [
     {
         type:'list',
@@ -16,6 +11,7 @@ let initialPrompt = [
         choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee','update employees manager','view employees by manager', 'view employees by department', 'delete entry','view department budget']
     },
 ];
+
 
 
 let addDepartmentPrompt = [
@@ -27,8 +23,6 @@ let addDepartmentPrompt = [
     },
 
 ]
-
-
 
 let addRolePrompt = [
     {
