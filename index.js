@@ -13,7 +13,7 @@ let initialPrompt = [
         type:'list',
         message:'Please choose from the following options',
         name:'initialAction',
-        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee','update employees manager','view employees by manager', 'view employees by department', 'delete entry']
+        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee','update employees manager','view employees by manager', 'view employees by department', 'delete entry','view department budget']
     },
 ];
 
@@ -68,6 +68,16 @@ let roleChoices = [
 
 
 
+]
+
+let employeeChoices = [
+    {
+        type:'list',
+        message:'Who is the employee to update?',
+        name:'employee',
+        choices: async() => { return await queryRun.employeesList()},
+        
+    },
 ]
 
 
@@ -277,7 +287,7 @@ async function determineAction(response) {
             queryRun.viewDepartmentEmployees(response,init);
         })
 
-
+        break;
         case('delete entry'):
         inquirer
         .prompt(deleteEntryPrompt)
@@ -285,34 +295,24 @@ async function determineAction(response) {
 
             deleteEntryTrigger(response)
             
-            // switch(response) {
-            //     case('department'):
-            //         inquirer 
-            //         .prompt(departmentChoices)
-            //         .then((response) => {
-            //         queryRun.deleteDepartment(response,init)
-            //         }) 
-                
-            //     break;
-            //     case('role'):
-
-            //     break;
-            //     case('employee'):
-
-            //     break;
-            //     default:
-
-            //     break;
-
-
-
-            // }
-            // department, role, employee
-
         })
         
         
         break;
+
+        case('view department budget'):
+            inquirer
+            .prompt(departmentChoices)
+            .then((response) => {
+                queryRun.departmentBudget(response,init);
+
+
+            })
+
+
+
+        break;
+
 
         default:
         console.info("Please select a valid option")
@@ -338,11 +338,16 @@ function deleteEntryTrigger(deleteClass) {
         inquirer 
         .prompt(roleChoices)
         .then((response) => {
-
+            queryRun.deleteRole(response,init);
         })
 
         break;
         case('employee'):
+        inquirer
+        .prompt(employeeChoices)
+        .then((response) => {
+            queryRun.deleteEmployee(response,init);
+        })
 
         break;
         default:

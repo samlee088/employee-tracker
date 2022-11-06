@@ -33,7 +33,7 @@ console.log('Connected to the employee_db database.')
 
 async function queryAllRoles(init) {
     try {
-        const returnAllRoles = await db.promise().query('Select * FROM role ORDER BY id')
+        const returnAllRoles = await db.promise().query('Select r.id, r.title, r.salary, r.department_id, d.name AS department_name FROM role r JOIN department d ON r.department_id = d.id ORDER BY id')
 
         console.table(returnAllRoles[0]);
         init();
@@ -146,6 +146,7 @@ async function changeRole(employee, newRole, init) {
     
     try{
         await db.promise().query('UPDATE employee SET role_id = (?) WHERE id =(?)', [newRole,employee])
+
         const updateEmployeeResults = await db.promise().query('SELECT e.id, e.first_name, e.last_name, e.role_id, e.manager_id, r.title FROM employee e JOIN role r ON e.role_id = r.id ORDER BY id')
 
         console.table(updateEmployeeResults[0])
@@ -238,6 +239,62 @@ async function deleteDepartment(department, init) {
     }
 
 }
+
+async function deleteRole(role, init){
+
+    try{
+        console.log(role);
+        await db.promise().query('DELETE FROM role WHERE id =?', role.employee_role);
+
+        const newRoleSet = await db.promise().query('SELECT * FROM role');
+
+        console.table(newRoleSet[0]);
+        init();
+    }
+
+    catch(err) {
+        console.error("Error with role delete");
+    }
+
+}
+
+async function deleteEmployee(employee, init) {
+    try{
+        console.log(employee);
+
+        await db.promise().query('DELETE FROM employee WHERE id=?',employee.employee);
+
+        const newEmployeeSet = await db.promise().query('SELECT * FROM employee');
+
+        console.table(newEmployeeSet[0]);
+        init();
+
+
+    }
+
+    catch(err) {
+        console.error("Error with employee deletion");
+        init();
+    }
+}
+
+async function departmentBudget(department, init) {
+    try{
+        console.log(department);
+        const budgetTotal = await db.promise().query('SELECT SUM(r.salary) AS total_department_payroll FROM employee e LEFT JOIN role r ON e.role_id=r.id LEFT JOIN department d ON r.department_id = d.id  WHERE department_id =?', department.roleDepartment);
+
+        console.table(budgetTotal[0]);
+        init();
+
+    }
+
+    catch(err) {
+        console.error("Error with department budget query");
+        init();
+    }
+}
+
+
 
 async function departmentsList() {
     try {
@@ -339,7 +396,10 @@ module.exports = {
     viewSubordinates,
     departmentsList,
     viewDepartmentEmployees,
-    deleteDepartment
+    deleteDepartment,
+    deleteRole,
+    deleteEmployee,
+    departmentBudget
 
 
 }
