@@ -1,7 +1,7 @@
 const inquirer= require('inquirer');
-const cTable = require('console.table');
 const queryRun = require('./sql');
-const e = require('express');
+
+
 
 
 
@@ -13,7 +13,7 @@ let initialPrompt = [
         type:'list',
         message:'Please choose from the following options',
         name:'initialAction',
-        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee','update employees manager','view employees by manager']
+        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee','update employees manager','view employees by manager', 'view employees by department', 'delete entry']
     },
 ];
 
@@ -43,17 +43,32 @@ let addRolePrompt = [
         name:'roleSalary',
 
     },
-    {
-        type:'list',
-        message:'Which department would they be a part of?',
-        name:'roleDepartment',
-        choices: async () => {return await queryRun.departmentsList()},
-
-    }
 
 ]
 
+let departmentChoices = [
+{
+    type:'list',
+    message:'What is the department?',
+    name:'roleDepartment',
+    choices: async () => {return await queryRun.departmentsList()},
 
+}
+
+]
+
+let roleChoices = [
+    {
+        type:'list',
+        message:'What is the role?',
+        name:'employee_role',
+        choices: async() => {return await queryRun.rolesList()},
+
+    },
+
+
+
+]
 
 
 let addEmployeePrompt = [
@@ -67,13 +82,6 @@ let addEmployeePrompt = [
         type:'input',
         message:'What is the employees last name?',
         name:'last_name',
-
-    },
-    {
-        type:'list',
-        message:'What is the role?',
-        name:'employee_role',
-        choices: async() => {return await queryRun.rolesList()},
 
     },
     {
@@ -132,6 +140,29 @@ let selectManager = [
 
 ]
 
+let viewEmployeePrompt = [
+    {
+        type:'list',
+        message:'Which departments employee would you like to view?',
+        name:'department',
+        choices: async() => {
+            return await queryRun.departmentsList()
+        }
+    }
+
+
+]
+
+let deleteEntryPrompt = [
+    {
+        type:'list',
+        message:'Which of the following would you like to delete?',
+        name:'delete',
+        choices:['department', 'role', 'employee'],
+
+    }
+]
+
 let initialPromptResponse 
 
 function init() {
@@ -177,7 +208,7 @@ async function determineAction(response) {
 
         case('add a role'):
             inquirer
-            .prompt(addRolePrompt)
+            .prompt(addRolePrompt.concat(departmentChoices))
             .then((response) =>{
                 const {roleName, roleSalary, roleDepartment} = response
                 queryRun.addRole(roleName, roleSalary, roleDepartment,init)
@@ -189,7 +220,7 @@ async function determineAction(response) {
 
         case('add an employee'):
             inquirer 
-            .prompt(addEmployeePrompt)
+            .prompt(addEmployeePrompt.concat(roleChoices))
             .then((response) => {
                 const {first_name, last_name, employee_role, employeeManager} = response;
                 console.log(first_name, last_name, employee_role, employeeManager);
@@ -237,6 +268,52 @@ async function determineAction(response) {
 
         break;
 
+        case('view employees by department'):
+        inquirer
+        .prompt(viewEmployeePrompt)
+        .then((response) => {
+           
+            console.log(response);
+            queryRun.viewDepartmentEmployees(response,init);
+        })
+
+
+        case('delete entry'):
+        inquirer
+        .prompt(deleteEntryPrompt)
+        .then((response) => {
+
+            deleteEntryTrigger(response)
+            
+            // switch(response) {
+            //     case('department'):
+            //         inquirer 
+            //         .prompt(departmentChoices)
+            //         .then((response) => {
+            //         queryRun.deleteDepartment(response,init)
+            //         }) 
+                
+            //     break;
+            //     case('role'):
+
+            //     break;
+            //     case('employee'):
+
+            //     break;
+            //     default:
+
+            //     break;
+
+
+
+            // }
+            // department, role, employee
+
+        })
+        
+        
+        break;
+
         default:
         console.info("Please select a valid option")
         break;
@@ -244,5 +321,37 @@ async function determineAction(response) {
 
 }
 
+
+function deleteEntryTrigger(deleteClass) {
+    console.log(deleteClass);
+    switch(deleteClass.delete) {
+
+        case('department'):
+        inquirer
+        .prompt(departmentChoices)
+        .then((response) => {
+            queryRun.deleteDepartment(response,init)
+        }) 
+        
+        break;
+        case('role'):
+        inquirer 
+        .prompt(roleChoices)
+        .then((response) => {
+
+        })
+
+        break;
+        case('employee'):
+
+        break;
+        default:
+
+        break;
+
+
+
+    }
+}
 
 init();

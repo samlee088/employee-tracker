@@ -16,7 +16,7 @@ console.log('Connected to the employee_db database.')
 // THEN I am presented with a formatted table showing department names and department ids
  async function queryAllDepartments(init) {
     try {
-        const returnData = await db.promise().query('Select name,id as value FROM department ORDER BY id')
+        const returnData = await db.promise().query('Select name,id FROM department ORDER BY id')
     
         console.table(returnData[0]);
         init();
@@ -53,7 +53,7 @@ async function queryAllRoles(init) {
 
 async function queryAllEmployees(init) {
     try {
-        const QueryAllEmployeesResults = await db.promise().query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary, d.name FROM employee AS e JOIN role AS r ON r.id = e.role_id JOIN department d ON d.id = r.department_id');
+        const QueryAllEmployeesResults = await db.promise().query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary, e.manager_id, d.name as Department FROM employee e JOIN role r ON r.id = e.role_id JOIN department d ON d.id = r.department_id');
 
         console.table(QueryAllEmployeesResults[0]);
         init();
@@ -95,7 +95,7 @@ async function addRole(roleName, roleSalary, roleDepartment, init) {
        
         await db.promise().query(`INSERT INTO role (title,salary, department_id) VALUES (?,?,?)`, [roleName,roleSalary,roleDepartment])
 
-        const newRoleResults = await db.promise().query('SELECT * FROM role ORDER BY id')
+        const newRoleResults = await db.promise().query('SELECT r.id, r.title, r.salary, d.name FROM role r JOIN department d ON r.department_id = d.id ORDER BY id')
 
         console.table(newRoleResults[0]);
         init();
@@ -146,7 +146,7 @@ async function changeRole(employee, newRole, init) {
     
     try{
         await db.promise().query('UPDATE employee SET role_id = (?) WHERE id =(?)', [newRole,employee])
-        const updateEmployeeResults = await db.promise().query('SELECT * FROM employee ORDER BY id')
+        const updateEmployeeResults = await db.promise().query('SELECT e.id, e.first_name, e.last_name, e.role_id, e.manager_id, r.title FROM employee e JOIN role r ON e.role_id = r.id ORDER BY id')
 
         console.table(updateEmployeeResults[0])
         init();
@@ -182,7 +182,7 @@ async function viewSubordinates(data,init) {
     try{
 
         console.log(data);
-        const viewSubordinatesResults = await db.promise().query(`SELECT id,first_name, last_name FROM employee WHERE manager_id =(?)`, data)
+        const viewSubordinatesResults = await db.promise().query(`SELECT id,first_name, last_name FROM employee WHERE manager_id =?`, data.Manager)
 
         console.table(viewSubordinatesResults[0]);
         init();
@@ -195,6 +195,49 @@ async function viewSubordinates(data,init) {
 
 }
 
+async function viewDepartmentEmployees(departmentData, init) {
+
+    try {
+        console.log(departmentData);
+        const employeeSelectionResults = await db.promise().query('SELECT d.name, e.id, e.first_name, e.last_name FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id WHERE d.id =?' , departmentData.department)
+
+        console.table(employeeSelectionResults[0])
+        init();
+
+
+
+    }
+
+    catch (err) {
+        console.error("Error with employee retrieval by department");
+        init();
+    }
+
+
+}
+
+
+
+
+async function deleteDepartment(department, init) {
+    try {
+        console.log(department);
+        await db.promise().query('DELETE FROM department WHERE id =?',department.roleDepartment );
+
+        const newDepartmentSet = await db.promise().query('SELECT * FROM department ORDER BY id');
+
+        console.table(newDepartmentSet[0]);
+        init();
+
+
+    }
+
+    catch(err) {
+        console.info("Error with employee delete");
+        init();
+    }
+
+}
 
 async function departmentsList() {
     try {
@@ -260,6 +303,24 @@ async function employeesList() {
     }
 }
 
+// async function departmentsList() {
+
+//     try {
+//        const departmentsListResults = await db.promise().query('SELECT name, id as value FROM department ORDER BY id')
+
+//        return departmentsListResults[0];
+
+//     }
+
+//     catch(err) {
+
+//         console.error("Error with grabbing departments list");
+//     }
+// }
+
+
+
+
 
 module.exports = {
     queryAllDepartments,
@@ -275,6 +336,10 @@ module.exports = {
     employeesList,
     changeManager,
     managersUpdateList,
-    viewSubordinates
+    viewSubordinates,
+    departmentsList,
+    viewDepartmentEmployees,
+    deleteDepartment
+
 
 }
