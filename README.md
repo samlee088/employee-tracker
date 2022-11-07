@@ -24,10 +24,12 @@
   ## Usage
 
   The user can download the files through github link, and then run locally through a terminal.
-  This application also uses Inquirer, Console.table, and MySQL2.
+  This application also uses inquirer, console.table, and mySQL2.
  
   ![screenshot of usage of the application](/assets/employee-tracker-screenshot.png)
-  https://drive.google.com/file/d/18IoFFfLEggikQ7JRoRl-baTQMNXMMzAy/view?usp=sharing
+
+
+  [Link to video example guide](https://drive.google.com/file/d/18IoFFfLEggikQ7JRoRl-baTQMNXMMzAy/view?usp=sharing)
 
   
   ## Credits
