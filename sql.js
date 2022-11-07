@@ -15,7 +15,7 @@ const db = mysql.createConnection(
 
 /* These grouping of functions are to run queries for data retrieval  */
 
- async function queryAllDepartments(init) {
+async function queryAllDepartments(init) {
     try {
         const returnData = await db.promise().query('Select name,id FROM department ORDER BY id')
     
@@ -100,7 +100,6 @@ async function addEmployee(first_name, last_name, employee_role, employeeManager
 
         console.table(newEmployeeResults[0]);
         init()
-        
     }   
         
     catch(err) {
@@ -110,17 +109,15 @@ async function addEmployee(first_name, last_name, employee_role, employeeManager
 };
 
 
-async function addEmployeeAsManager(first_name, last_name, employee_role ,init) {
+async function addEmployeeAsManager(first_name, last_name, employee_role , init) {
     try{
-            await db.promise().query('INSERT INTO employee (first_name, last_name, role_id,manager_id) VALUES (?,?,?,?)', (first_name, last_name, employee_role, NULL))
+        const nullVal = null
+        await db.promise().query('INSERT INTO employee (first_name, last_name, role_id,manager_id) VALUES (?,?,?,?)', [first_name, last_name, employee_role, nullVal])
 
-            const newEmployeeResults = await db.promise().query('SELECT * FROM employee ORDER BY id')
-    
-            console.table(newEmployeeResults[0]);
-            init()
+        const newEmployeeResults = await db.promise().query('SELECT * FROM employee ORDER BY id')
 
-
-        
+        console.table(newEmployeeResults[0]);
+        init()
     }   
         
     catch(err) {
@@ -132,7 +129,6 @@ async function addEmployeeAsManager(first_name, last_name, employee_role ,init) 
 
 async function changeRole(employee, newRole, init) {
     try{
-        console.log(employee, newRole);
         await db.promise().query('UPDATE employee SET role_id = (?) WHERE id =(?)', [newRole,employee])
 
         const updateEmployeeResults = await db.promise().query('SELECT e.id, e.first_name, e.last_name, e.role_id, e.manager_id, r.title FROM employee e JOIN role r ON e.role_id = r.id ORDER BY id')
@@ -198,7 +194,6 @@ async function viewDepartmentEmployees(departmentData, init) {
 /* This grouping of functions are queries to delete data  */
 async function deleteDepartment(department, init) {
     try {
-        console.log(department);
         await db.promise().query('DELETE FROM department WHERE id =?', department.roleDepartment );
 
         const newDepartmentSet = await db.promise().query('SELECT * FROM department ORDER BY id');
@@ -208,7 +203,7 @@ async function deleteDepartment(department, init) {
     }
 
     catch(err) {
-        console.info("Error with department delete");
+        console.error("Error with department delete");
         init();
     }
 };

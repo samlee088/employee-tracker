@@ -6,7 +6,7 @@
 
   ## Description
 
-  This is a project that was created so that a user can use the application to manage employee data. Some of the functions available are to input data into the application to update information regarding employees, and to view data that is in the  application data tables. This project was created with an emphasis on MYSQL2.
+  This is a project that was created so that a user can use the application to manage employee data. Some of the functions available are to input data into the application to update information regarding employees, and to view data that is in the  application data tables. This project was created with an emphasis on MYSQL2 and NPM Inquirer. 
 
 
   ## Table of Contents
@@ -23,11 +23,13 @@
 
   ## Usage
 
-  Usage is to download, install inquirer, and run through a terminal application of the users choice.
-
+  The user can download the files through github link, and then run locally through a terminal.
+  This application also uses Inquirer, Console.table, and MySQL2.
+ 
   ![screenshot of usage of the application](/assets/employee-tracker-screenshot.png)
+  https://drive.google.com/file/d/18IoFFfLEggikQ7JRoRl-baTQMNXMMzAy/view?usp=sharing
 
-
+  
   ## Credits
 
   NA
