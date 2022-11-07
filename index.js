@@ -8,12 +8,57 @@ let initialPrompt = [
         type:'list',
         message:'Please choose from the following options',
         name:'initialAction',
-        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee','update employees manager','view employees by manager', 'view employees by department', 'delete entry','view department budget']
+        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role','update employees manager','view employees by manager', 'view employees by department', 'delete entry','view department budget']
     },
 ];
 
 
 
+let departmentChoices = [
+    {
+        type:'list',
+        message:'What is the department?',
+        name:'roleDepartment',
+        choices: async () => {return await queryRun.departmentsList()},
+    
+    }
+    
+    ]
+    
+    let roleChoices = [
+        {
+            type:'list',
+            message:'What is the role?',
+            name:'employee_role',
+            choices: async() => {return await queryRun.rolesList()},
+    
+        },
+    
+    
+    
+    ]
+    
+    let employeeChoices = [
+        {
+            type:'list',
+            message:'Who is the employee to update?',
+            name:'employee',
+            choices: async() => { return await queryRun.employeesList()},
+            
+        },
+    ]
+    
+    let managersChoicesWithNull = [
+    {
+        type:'list',
+        message:'Who is the employees manager?',
+        name:'employeeManager',
+        choices: async() => {return await queryRun.managersListWithNull()},
+    
+    },
+    
+    ]
+    
 let addDepartmentPrompt = [
     {
         type:'prompt',
@@ -40,40 +85,16 @@ let addRolePrompt = [
 
 ]
 
-let departmentChoices = [
-{
-    type:'list',
-    message:'What is the department?',
-    name:'roleDepartment',
-    choices: async () => {return await queryRun.departmentsList()},
-
-}
-
-]
-
-let roleChoices = [
-    {
-        type:'list',
-        message:'What is the role?',
-        name:'employee_role',
-        choices: async() => {return await queryRun.rolesList()},
-
-    },
-
-
-
-]
-
-let employeeChoices = [
-    {
-        type:'list',
-        message:'Who is the employee to update?',
-        name:'employee',
-        choices: async() => { return await queryRun.employeesList()},
-        
-    },
-]
-
+// let managersChoices = [
+//     {
+//         type:'list',
+//         message:'Who is the employees manager?',
+//         name:'employeeManager',
+//         choices: async() => {return await queryRun.managersList()},
+    
+//     },
+    
+//     ]
 
 let addEmployeePrompt = [
     {
@@ -88,50 +109,36 @@ let addEmployeePrompt = [
         name:'last_name',
 
     },
-    {
-        type:'list',
-        message:'Who is the employees manager?',
-        name:'employeeManager',
-        choices: async() => {return await queryRun.managersList()},
 
-    },
 ]
 
-
-let roleUpdatePrompt = [
-    {
-        type:'list',
-        message:'Who is the employee to update?',
-        name:'employee',
-        choices: async() => { return await queryRun.employeesList()},
+// let roleUpdatePrompt = [
+//     {
+//         type:'list',
+//         message:'Who is the employee to update?',
+//         name:'employee',
+//         choices: async() => { return await queryRun.employeesList()},
         
-    },
-    {
-        type:'list',
-        message:'What is the employees new role?',
-        name:'newRole',
-        choices: async() => { return await queryRun.rolesList()},
+//     },
+//     {
+//         type:'list',
+//         message:'What is the employees new role?',
+//         name:'newRole',
+//         choices: async() => { return await queryRun.rolesList()},
 
-    },
+//     },
 
-]
+// ]
 
-let updateEmployeeManager = [
-    {
-        type:'list',
-        message:'Who is the employee to update?',
-        name:'employee',
-        choices: async() => { return await queryRun.employeesList()},
-    },
-    {
-        type:'list',
-        message:'Who is the employees new manager?',
-        name:'newManager',
-        choices: async() => { return await queryRun.managersList()},
+// let updateEmployeeManager = [
+//     {
+//         type:'list',
+//         message:'Who is the employee to update?',
+//         name:'employee',
+//         choices: async() => { return await queryRun.employeesList()},
+//     },
 
-    },
-
-]
+// ]
 
 let selectManager = [
     {
@@ -144,18 +151,18 @@ let selectManager = [
 
 ]
 
-let viewEmployeePrompt = [
-    {
-        type:'list',
-        message:'Which departments employee would you like to view?',
-        name:'department',
-        choices: async() => {
-            return await queryRun.departmentsList()
-        }
-    }
+// let viewEmployeePrompt = [
+//     {
+//         type:'list',
+//         message:'Which departments employee would you like to view?',
+//         name:'department',
+//         choices: async() => {
+//             return await queryRun.departmentsList()
+//         }
+//     }
 
 
-]
+// ]
 
 let deleteEntryPrompt = [
     {
@@ -166,6 +173,7 @@ let deleteEntryPrompt = [
 
     }
 ]
+
 
 let initialPromptResponse 
 
@@ -224,13 +232,21 @@ async function determineAction(response) {
 
         case('add an employee'):
             inquirer 
-            .prompt(addEmployeePrompt.concat(roleChoices))
+            .prompt(addEmployeePrompt.concat(roleChoices, managersChoicesWithNull))
             .then((response) => {
                 const {first_name, last_name, employee_role, employeeManager} = response;
-                console.log(first_name, last_name, employee_role, employeeManager);
-                queryRun.addEmployee(first_name, last_name, employee_role, employeeManager,init);
-
                 
+                console.log(first_name, last_name, employee_role, employeeManager);
+
+                if(employeeManager =='NULL') {
+
+                    queryRun.addEmployeeAsManager(first_name, last_name, employee_role, init)
+                }
+
+                else {
+                    queryRun.addEmployee(first_name, last_name, employee_role, employeeManager,init);
+
+                }
 
 
         })
@@ -238,12 +254,12 @@ async function determineAction(response) {
       
         break;
 
-        case('update an employee'):
+         case('update an employee role'):
         inquirer
-        .prompt(roleUpdatePrompt)
+        .prompt(employeeChoices.concat(roleChoices))
         .then((response) => {
-            const {employee,newRole} = response;
-            queryRun.changeRole(employee,newRole,init)
+            const {employee, employee_role} = response;
+            queryRun.changeRole(employee,employee_role,init)
 
             
 
@@ -252,10 +268,10 @@ async function determineAction(response) {
 
         case('update employees manager'):
         inquirer
-        .prompt(updateEmployeeManager)
+        .prompt(employeeChoices.concat(managersChoicesWithNull))
         .then((response) => {
-        const {employee, newManager} = response;
-        queryRun.changeManager(employee, newManager, init);
+        const {employee, employeeManager} = response;
+        queryRun.changeManager(employee, employeeManager, init);
 
         });
 
@@ -274,7 +290,7 @@ async function determineAction(response) {
 
         case('view employees by department'):
         inquirer
-        .prompt(viewEmployeePrompt)
+        .prompt(departmentChoices)
         .then((response) => {
            
             console.log(response);

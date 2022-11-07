@@ -45,7 +45,7 @@ async function queryAllRoles(init) {
 
 async function queryAllEmployees(init) {
     try {
-        const QueryAllEmployeesResults = await db.promise().query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary, e.manager_id, d.name as Department FROM employee e JOIN role r ON r.id = e.role_id JOIN department d ON d.id = r.department_id');
+        const QueryAllEmployeesResults = await db.promise().query('SELECT e.id, e.first_name, e.last_name, r.title, r.salary, e.manager_id, d.name as Department FROM employee e JOIN role r ON r.id = e.role_id JOIN department d ON d.id = r.department_id ORDER BY e.id');
 
         console.table(QueryAllEmployeesResults[0]);
         init();
@@ -96,20 +96,43 @@ async function addEmployee(first_name, last_name, employee_role, employeeManager
     try{
         await db.promise().query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [first_name, last_name, employee_role, employeeManager])
 
-        const newEmployeeResults = await db.promise().query('SELECT * FROM employee ORDER BY id')
+        const newEmployeeResults = await db.promise().query('SELECT e.id, e.first_name, e.last_name, e.role_id, e.manager_id, r.title FROM employee e JOIN role r ON e.role_id = r.id ORDER BY id')
 
         console.table(newEmployeeResults[0]);
         init()
-    }
+        
+    }   
         
     catch(err) {
-        console.error("Error with adding in Employee");
+        console.error("Error with adding in Employee1");
         init();
     }
 };
 
+
+async function addEmployeeAsManager(first_name, last_name, employee_role ,init) {
+    try{
+            await db.promise().query('INSERT INTO employee (first_name, last_name, role_id,manager_id) VALUES (?,?,?,?)', (first_name, last_name, employee_role, NULL))
+
+            const newEmployeeResults = await db.promise().query('SELECT * FROM employee ORDER BY id')
+    
+            console.table(newEmployeeResults[0]);
+            init()
+
+
+        
+    }   
+        
+    catch(err) {
+        console.error("Error with adding in Employee2");
+        init();
+    }
+};
+
+
 async function changeRole(employee, newRole, init) {
     try{
+        console.log(employee, newRole);
         await db.promise().query('UPDATE employee SET role_id = (?) WHERE id =(?)', [newRole,employee])
 
         const updateEmployeeResults = await db.promise().query('SELECT e.id, e.first_name, e.last_name, e.role_id, e.manager_id, r.title FROM employee e JOIN role r ON e.role_id = r.id ORDER BY id')
@@ -158,7 +181,7 @@ async function viewSubordinates(data,init) {
 
 async function viewDepartmentEmployees(departmentData, init) {
     try {
-        const employeeSelectionResults = await db.promise().query('SELECT d.name, e.id, e.first_name, e.last_name FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id WHERE d.id =?' , departmentData.department)
+        const employeeSelectionResults = await db.promise().query('SELECT d.name, e.id, e.first_name, e.last_name FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id WHERE d.id =?' , departmentData.roleDepartment)
 
         console.table(employeeSelectionResults[0])
         init();
@@ -175,7 +198,8 @@ async function viewDepartmentEmployees(departmentData, init) {
 /* This grouping of functions are queries to delete data  */
 async function deleteDepartment(department, init) {
     try {
-        await db.promise().query('DELETE FROM department WHERE id =?',department.roleDepartment );
+        console.log(department);
+        await db.promise().query('DELETE FROM department WHERE id =?', department.roleDepartment );
 
         const newDepartmentSet = await db.promise().query('SELECT * FROM department ORDER BY id');
 
@@ -184,7 +208,7 @@ async function deleteDepartment(department, init) {
     }
 
     catch(err) {
-        console.info("Error with employee delete");
+        console.info("Error with department delete");
         init();
     }
 };
@@ -215,7 +239,7 @@ async function deleteEmployee(employee, init) {
     }
 
     catch(err) {
-        console.error("Error with employee deletion");
+        console.error("Error with employee delete");
         init();
     }
 };
@@ -263,11 +287,11 @@ async function rolesList() {
     }
 };
 
-async function managersList() {
+async function managersListWithNull() {
     try{
         const managersListResults = await db.promise().query('SELECT first_name as name, id as value FROM employee ORDER BY id')
 
-        return managersListResults[0];
+        return managersListResults[0].concat('NULL');
     }
 
     catch(err) {
@@ -275,7 +299,7 @@ async function managersList() {
     }
 };
 
-async function managersUpdateList() {
+async function managersList() {
     try{
         const managersListResults = await db.promise().query('SELECT first_name as name, id as value FROM employee ORDER BY id')
      
@@ -309,13 +333,14 @@ module.exports = {
     addDepartment,
     addRole,
     addEmployee,
+    addEmployeeAsManager,
     changeRole,
     departmentsList,
     managersList,
+    managersListWithNull,
     rolesList,
     employeesList,
     changeManager,
-    managersUpdateList,
     viewSubordinates,
     departmentsList,
     viewDepartmentEmployees,
